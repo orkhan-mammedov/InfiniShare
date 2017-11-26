@@ -2,7 +2,9 @@
 
 InfiniShare is a project that facilitates concurrent file sharing between multiple users, through the server. Both, server and client, are built using Java NIO, meaning that they follow event driven programming paradigm.
 
-# How to run?
+## How to build?
+
+To build both server and client, run: make all.
 
 ## Server Program
 
@@ -37,7 +39,7 @@ The 5th parameter specifies the size of the buffer that is transmitted during ea
 
 This parameters allows for a simple form of rate control that is important to test the concurrency of the server.
 
-# Design
+## Design
 Both client and server of my application are built using Java NIO.
 
 The idea of the server, is that we startup and create a single server socket channel (essentially server socket). At this point a server listens for all the incoming connection requests (there is NO busy looping, instead we use Java NIO selector which triggers an event when there is a connection request). When a client starts a connection with the server, server socket channel creates a new socket for this connection, and register that socket with a selector, so that when the packets arrive to this new socket an event is triggered.
