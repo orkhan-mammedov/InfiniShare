@@ -14,7 +14,9 @@ When the server receives the termination command from a client, it closes all wa
 
 Communication
 The data stream sent from the client to the server adheres to the following format:
+
     command 1 		ASCII character: G (get = download), P (put = upload), or F (finish = termination)
+    
     key     8 		ASCII characters (padded at the end by '\0'-characters, if necessary)
 
 In case of an upload, the above 9-byte control information is immediately followed by the binary data stream of the file. In case of download, the server responds with the binary data stream of the file. When a client has completed a file upload, it closes the connection. Then the server closes the download connection to the other client.
@@ -22,8 +24,11 @@ In case of an upload, the above 9-byte control information is immediately follow
 ## Client Program
 
 The client takes up to 6 parameters and can be invoked in 3 different ways:
+
     1. terminate server: client <host> <port> F
+    
     2. download: client <host> <port> G<key> <file name> <recv size>
+    
     3. upload: client <host> <port> P<key> <file name> <send size> <wait time>
 
 The client creates a TCP socket and connects to the server at <host> and <port>. It then transmits the command string given in the 3rd shell parameter to the server as described above, i.e., with padding. When transmitting an 'F' command, the client sends an empty key, i.e., 8 '\0'-characters. When requesting an upload or download, it reads data from or stores data to, respectively, the file specified in the 4th parameter. When uploading and the 4th parameter is given as an integer number, the number is taken as the virtual file size in bytes. In this case, the sender application does not transmit the contents of an actual file, but empty/random data equivalent to the virtual file size.
@@ -32,7 +37,7 @@ The 5th parameter specifies the size of the buffer that is transmitted during ea
 
 This parameters allows for a simple form of rate control that is important to test the concurrency of the server.
 
-## Design
+# Design
 Both client and server of my application are built using Java NIO.
 
 The idea of the server, is that we startup and create a single server socket channel (essentially server socket). At this point a server listens for all the incoming connection requests (there is NO busy looping, instead we use Java NIO selector which triggers an event when there is a connection request). When a client starts a connection with the server, server socket channel creates a new socket for this connection, and register that socket with a selector, so that when the packets arrive to this new socket an event is triggered.
